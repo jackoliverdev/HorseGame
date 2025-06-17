@@ -1,0 +1,61 @@
+/* Game page - fullscreen canvas */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #000;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Back button */
+.back-btn-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+}
+
+.back-btn {
+    display: inline-block;
+    padding: 12px 20px;
+    background: rgba(0, 20, 40, 0.9);
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.back-btn:hover {
+    background: rgba(76, 175, 80, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+/* Fullscreen canvas */
+.threejs {
+    width: 100vw;
+    height: 100vh;
+    display: block;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .back-btn-container {
+        top: 10px;
+        left: 10px;
+    }
+    
+    .back-btn {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+} 
