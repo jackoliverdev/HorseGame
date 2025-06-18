@@ -31,7 +31,8 @@ let mobileControls = {
   movement: {
     forward: 0,
     turn: 0
-  }
+  },
+  jumpPressed: false // Track if jump was already pressed to prevent continuous jumping
 };
 
 // Initialize mobile controls function
@@ -41,11 +42,10 @@ function initMobileControls() {
   
   const joystickKnob = document.getElementById('joystick-knob');
   const jumpBtn = document.getElementById('jump-btn');
-  const interactBtn = document.getElementById('interact-btn');
   const joystickContainer = document.querySelector('.joystick-container');
   const joystickBase = document.querySelector('.joystick-base');
   
-  if (!joystickKnob || !jumpBtn || !interactBtn || !joystickContainer || !joystickBase) return;
+  if (!joystickKnob || !jumpBtn || !joystickContainer || !joystickBase) return;
   
   mobileControlsDiv.classList.add('active');
   
@@ -114,7 +114,7 @@ function initMobileControls() {
   jumpBtn.addEventListener('touchstart', (e) => {
     e.preventDefault();
     mobileControls.buttons.jump = true;
-    jumpBtn.style.background = 'rgba(255, 255, 255, 0.4)';
+    jumpBtn.style.background = 'rgba(76, 175, 80, 0.6)';
     jumpBtn.style.transform = 'scale(0.95)';
   }, { passive: false });
   
@@ -125,19 +125,7 @@ function initMobileControls() {
     jumpBtn.style.transform = 'scale(1)';
   }, { passive: false });
   
-  interactBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    mobileControls.buttons.interact = true;
-    interactBtn.style.background = 'rgba(255, 255, 255, 0.4)';
-    interactBtn.style.transform = 'scale(0.95)';
-  }, { passive: false });
-  
-  interactBtn.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    mobileControls.buttons.interact = false;
-    interactBtn.style.background = 'rgba(255, 255, 255, 0.2)';
-    interactBtn.style.transform = 'scale(1)';
-  }, { passive: false });
+  // Remove interact button handlers since modals auto-appear on mobile
   
   console.log('📱 Mobile controls initialized!');
 }
@@ -1469,7 +1457,7 @@ function updateHorseMovement() {
     turnLeft = Math.max(0, -mobileControls.movement.turn);
     turnRight = Math.max(0, mobileControls.movement.turn);
     shouldJump = mobileControls.buttons.jump;
-    shouldInteract = mobileControls.buttons.interact;
+    shouldInteract = false; // Auto-interact on mobile, no button needed
   } else {
     // Desktop keyboard controls
     moveForward = (keys['ArrowUp'] || keys['KeyW']) ? 1 : 0;
@@ -1481,10 +1469,25 @@ function updateHorseMovement() {
   }
   
   // Jumping (unified for both platforms)
-  if (shouldJump && !isJumping) {
-    isJumping = true;
-    jumpStartY = horse.position.y;
-    jumpProgress = 0;
+  if (isMobile) {
+    // Mobile: Only jump when button is first pressed, not held
+    if (shouldJump && !mobileControls.jumpPressed && !isJumping) {
+      isJumping = true;
+      jumpStartY = horse.position.y;
+      jumpProgress = 0;
+      mobileControls.jumpPressed = true;
+    }
+    // Reset jump pressed when button is released
+    if (!shouldJump) {
+      mobileControls.jumpPressed = false;
+    }
+  } else {
+    // Desktop: Original jump logic
+    if (shouldJump && !isJumping) {
+      isJumping = true;
+      jumpStartY = horse.position.y;
+      jumpProgress = 0;
+    }
   }
   
   // Handle jump physics
