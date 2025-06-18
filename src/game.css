@@ -12,14 +12,60 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
-/* Back button */
-.back-btn-container {
+/* Mobile-friendly header */
+.mobile-header {
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: 0;
+    left: 0;
+    right: 0;
     z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 15px 20px;
+    background: linear-gradient(180deg, rgba(0, 20, 40, 0.9) 0%, rgba(0, 20, 40, 0.7) 70%, transparent 100%);
+    backdrop-filter: blur(10px);
+    pointer-events: none;
 }
 
+.mobile-header > * {
+    pointer-events: all;
+}
+
+/* Back button container - now part of header */
+.back-btn-container {
+    position: relative;
+    top: 0;
+    left: 0;
+    z-index: auto;
+}
+
+/* Game title section */
+.game-title {
+    text-align: right;
+    color: white;
+    margin-left: auto;
+}
+
+.game-title h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    line-height: 1.2;
+}
+
+.game-subtitle {
+    margin: 5px 0 0 0;
+    font-size: 14px;
+    font-weight: 400;
+    opacity: 0.9;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    color: #4CAF50;
+    line-height: 1.2;
+}
+
+/* Back button */
 .back-btn {
     display: inline-block;
     padding: 12px 20px;
@@ -157,14 +203,36 @@ body {
 
 /* Mobile responsiveness */
 @media (max-width: 768px) {
+    /* Mobile header adjustments */
+    .mobile-header {
+        padding: 10px 15px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .game-title {
+        text-align: left;
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .game-title h1 {
+        font-size: 20px;
+    }
+    
+    .game-subtitle {
+        font-size: 12px;
+    }
+    
     .back-btn-container {
-        top: 10px;
-        left: 10px;
+        align-self: flex-start;
     }
     
     .back-btn {
-        padding: 10px 16px;
+        padding: 8px 16px;
         font-size: 14px;
+        border-radius: 20px;
     }
     
     /* Adjust mobile controls for smaller screens */
@@ -246,6 +314,34 @@ body {
 
 /* Landscape mobile adjustments */
 @media (max-width: 768px) and (orientation: landscape) {
+    /* Header adjustments for landscape */
+    .mobile-header {
+        padding: 8px 15px;
+        flex-direction: row;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .game-title {
+        text-align: right;
+        margin-left: auto;
+        width: auto;
+    }
+    
+    .game-title h1 {
+        font-size: 18px;
+    }
+    
+    .game-subtitle {
+        font-size: 11px;
+    }
+    
+    .back-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+    
+    /* Joystick and buttons for landscape */
     .joystick-container {
         bottom: 20px;
         left: 20px;

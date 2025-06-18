@@ -875,14 +875,68 @@ function createSpeechBubble() {
   
   document.body.appendChild(speechBubble);
   
-  // Add event listeners
-  document.getElementById('farmer-yes-btn').addEventListener('click', () => {
+  // Enhanced mobile-friendly event listeners for Farmer Joe buttons
+  const yesBtn = document.getElementById('farmer-yes-btn');
+  const noBtn = document.getElementById('farmer-no-btn');
+  
+  // Function to handle button actions with multiple event types
+  function addMobileFriendlyHandler(button, action) {
+    // Regular click event
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      action();
+    });
+    
+    // Touch events for mobile
+    button.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      button.style.transform = 'scale(0.95)';
+      button.style.opacity = '0.8';
+    });
+    
+    button.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      button.style.transform = 'scale(1)';
+      button.style.opacity = '1';
+      // Execute action on touchend
+      setTimeout(action, 50); // Small delay to show visual feedback
+    });
+    
+    button.addEventListener('touchcancel', (e) => {
+      e.preventDefault();
+      button.style.transform = 'scale(1)';
+      button.style.opacity = '1';
+    });
+    
+    // Mouse events for desktop
+    button.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      button.style.transform = 'scale(0.95)';
+    });
+    
+    button.addEventListener('mouseup', (e) => {
+      e.preventDefault();
+      button.style.transform = 'scale(1)';
+    });
+    
+    button.addEventListener('mouseleave', (e) => {
+      button.style.transform = 'scale(1)';
+    });
+  }
+  
+  // Add handlers for both buttons
+  addMobileFriendlyHandler(yesBtn, () => {
     speechBubble.style.display = 'none';
     startGame();
+    console.log('🌾 YES button pressed - Starting game!');
   });
   
-  document.getElementById('farmer-no-btn').addEventListener('click', () => {
+  addMobileFriendlyHandler(noBtn, () => {
     speechBubble.style.display = 'none';
+    console.log('❌ NO button pressed - Closing modal');
   });
   
   return speechBubble;
