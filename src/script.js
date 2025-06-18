@@ -5,6 +5,149 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 // initialize the scene
 const scene = new THREE.Scene();
 
+// MOBILE DETECTION AND TOUCH CONTROLS! 📱🎮
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                 (navigator.maxTouchPoints && navigator.maxTouchPoints > 2) ||
+                 window.innerWidth <= 768;
+
+console.log(`📱 Device detected: ${isMobile ? 'Mobile' : 'Desktop'}`);
+
+// Mobile control state
+let mobileControls = {
+  joystick: {
+    active: false,
+    startX: 0,
+    startY: 0,
+    currentX: 0,
+    currentY: 0,
+    centerX: 0,
+    centerY: 0,
+    maxDistance: 50
+  },
+  buttons: {
+    jump: false,
+    interact: false
+  },
+  movement: {
+    forward: 0,
+    turn: 0
+  }
+};
+
+// Initialize mobile controls function
+function initMobileControls() {
+  const mobileControlsDiv = document.getElementById('mobile-controls');
+  if (!mobileControlsDiv) return;
+  
+  const joystickKnob = document.getElementById('joystick-knob');
+  const jumpBtn = document.getElementById('jump-btn');
+  const interactBtn = document.getElementById('interact-btn');
+  const joystickContainer = document.querySelector('.joystick-container');
+  const joystickBase = document.querySelector('.joystick-base');
+  
+  if (!joystickKnob || !jumpBtn || !interactBtn || !joystickContainer || !joystickBase) return;
+  
+  mobileControlsDiv.classList.add('active');
+  
+  // Joystick center calculation
+  function updateJoystickCenter() {
+    const rect = joystickBase.getBoundingClientRect();
+    mobileControls.joystick.centerX = rect.left + rect.width / 2;
+    mobileControls.joystick.centerY = rect.top + rect.height / 2;
+  }
+  
+  updateJoystickCenter();
+  window.addEventListener('resize', updateJoystickCenter);
+  window.addEventListener('orientationchange', () => {
+    setTimeout(updateJoystickCenter, 100);
+  });
+  
+  // Touch handlers
+  function handleJoystickStart(e) {
+    e.preventDefault();
+    mobileControls.joystick.active = true;
+    updateJoystickCenter();
+  }
+  
+  function handleJoystickMove(e) {
+    if (!mobileControls.joystick.active) return;
+    e.preventDefault();
+    
+    const touch = e.touches ? e.touches[0] : e;
+    const deltaX = touch.clientX - mobileControls.joystick.centerX;
+    const deltaY = touch.clientY - mobileControls.joystick.centerY;
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    const maxDistance = 50;
+    
+    if (distance <= maxDistance) {
+      mobileControls.joystick.currentX = deltaX;
+      mobileControls.joystick.currentY = deltaY;
+    } else {
+      const angle = Math.atan2(deltaY, deltaX);
+      mobileControls.joystick.currentX = Math.cos(angle) * maxDistance;
+      mobileControls.joystick.currentY = Math.sin(angle) * maxDistance;
+    }
+    
+    joystickKnob.style.transform = `translate(${mobileControls.joystick.currentX - 20}px, ${mobileControls.joystick.currentY - 20}px)`;
+    
+    mobileControls.movement.forward = -mobileControls.joystick.currentY / maxDistance;
+    mobileControls.movement.turn = mobileControls.joystick.currentX / maxDistance;
+  }
+  
+  function handleJoystickEnd(e) {
+    e.preventDefault();
+    mobileControls.joystick.active = false;
+    mobileControls.joystick.currentX = 0;
+    mobileControls.joystick.currentY = 0;
+    mobileControls.movement.forward = 0;
+    mobileControls.movement.turn = 0;
+    joystickKnob.style.transform = 'translate(-50%, -50%)';
+  }
+  
+  // Add event listeners
+  joystickContainer.addEventListener('touchstart', handleJoystickStart, { passive: false });
+  document.addEventListener('touchmove', handleJoystickMove, { passive: false });
+  document.addEventListener('touchend', handleJoystickEnd, { passive: false });
+  
+  // Button handlers
+  jumpBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    mobileControls.buttons.jump = true;
+    jumpBtn.style.background = 'rgba(255, 255, 255, 0.4)';
+    jumpBtn.style.transform = 'scale(0.95)';
+  }, { passive: false });
+  
+  jumpBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    mobileControls.buttons.jump = false;
+    jumpBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+    jumpBtn.style.transform = 'scale(1)';
+  }, { passive: false });
+  
+  interactBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    mobileControls.buttons.interact = true;
+    interactBtn.style.background = 'rgba(255, 255, 255, 0.4)';
+    interactBtn.style.transform = 'scale(0.95)';
+  }, { passive: false });
+  
+  interactBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    mobileControls.buttons.interact = false;
+    interactBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+    interactBtn.style.transform = 'scale(1)';
+  }, { passive: false });
+  
+  console.log('📱 Mobile controls initialized!');
+}
+
+// Initialize mobile controls when DOM is ready
+if (isMobile) {
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(initMobileControls, 100);
+  });
+}
+
 // Create a gradient sky background
 const skyGeometry = new THREE.SphereGeometry(15000, 32, 15); // Much bigger sky
 const skyMaterial = new THREE.MeshBasicMaterial({
@@ -1310,8 +1453,34 @@ function updateHorseMovement() {
   const currentX = horse.position.x;
   const currentZ = horse.position.z;
   
-  // Jumping (always available)
-  if ((keys['Space'] || keys['KeyE']) && !isJumping) {
+  // UNIFIED INPUT SYSTEM - works for both desktop and mobile! 🎮📱
+  let moveForward = 0;
+  let moveBackward = 0;
+  let turnLeft = 0;
+  let turnRight = 0;
+  let shouldJump = false;
+  let shouldInteract = false;
+  
+  if (isMobile) {
+    // Mobile touch controls
+    moveForward = Math.max(0, mobileControls.movement.forward);
+    moveBackward = Math.max(0, -mobileControls.movement.forward);
+    turnLeft = Math.max(0, -mobileControls.movement.turn);
+    turnRight = Math.max(0, mobileControls.movement.turn);
+    shouldJump = mobileControls.buttons.jump;
+    shouldInteract = mobileControls.buttons.interact;
+  } else {
+    // Desktop keyboard controls
+    moveForward = (keys['ArrowUp'] || keys['KeyW']) ? 1 : 0;
+    moveBackward = (keys['ArrowDown'] || keys['KeyS']) ? 1 : 0;
+    turnLeft = (keys['ArrowLeft'] || keys['KeyA']) ? 1 : 0;
+    turnRight = (keys['ArrowRight'] || keys['KeyD']) ? 1 : 0;
+    shouldJump = keys['Space'] || keys['KeyE'];
+    shouldInteract = keys['KeyF'] || keys['KeyR']; // Added interaction keys for desktop
+  }
+  
+  // Jumping (unified for both platforms)
+  if (shouldJump && !isJumping) {
     isJumping = true;
     jumpStartY = horse.position.y;
     jumpProgress = 0;
@@ -1333,22 +1502,24 @@ function updateHorseMovement() {
     }
   }
   
-  // Calculate new position
+  // Calculate new position (unified movement system)
   let newX = currentX;
   let newZ = currentZ;
   
-  // Forward/Backward movement (always available)
-  if (keys['ArrowUp'] || keys['KeyW']) {
+  // Forward/Backward movement
+  if (moveForward > 0) {
     const direction = new THREE.Vector3();
     horse.getWorldDirection(direction);
-    newX += direction.x * horseSpeed;
-    newZ += direction.z * horseSpeed;
+    const intensity = isMobile ? moveForward : 1; // Mobile has variable intensity
+    newX += direction.x * horseSpeed * intensity;
+    newZ += direction.z * horseSpeed * intensity;
   }
-  if (keys['ArrowDown'] || keys['KeyS']) {
+  if (moveBackward > 0) {
     const direction = new THREE.Vector3();
     horse.getWorldDirection(direction);
-    newX -= direction.x * horseSpeed;
-    newZ -= direction.z * horseSpeed;
+    const intensity = isMobile ? moveBackward : 1;
+    newX -= direction.x * horseSpeed * intensity;
+    newZ -= direction.z * horseSpeed * intensity;
   }
   
   // Check for fence collision before moving
@@ -1357,22 +1528,29 @@ function updateHorseMovement() {
     horse.position.z = newZ;
   }
   
-  // Left/Right turning
-  if (keys['ArrowLeft'] || keys['KeyA']) {
-    horse.rotation.y += rotationSpeed;
+  // Left/Right turning (unified)
+  if (turnLeft > 0) {
+    const intensity = isMobile ? turnLeft : 1;
+    horse.rotation.y += rotationSpeed * intensity;
   }
-  if (keys['ArrowRight'] || keys['KeyD']) {
-    horse.rotation.y -= rotationSpeed;
+  if (turnRight > 0) {
+    const intensity = isMobile ? turnRight : 1;
+    horse.rotation.y -= rotationSpeed * intensity;
   }
   
   // Check haystack interactions (only during challenge)
   checkHaystackInteractions();
   
   // Check farmer interactions (only during free roam)
-  checkFarmerInteraction();
-  
-  // Check Farmer Steve interactions for tips! (only during free roam)
-  checkSteveInteraction();
+  // Auto-trigger on mobile when near, manual trigger on desktop
+  if (isMobile || shouldInteract) {
+    checkFarmerInteraction();
+    checkSteveInteraction();
+  } else {
+    // Still check for proximity on desktop for speech
+    checkFarmerInteraction();
+    checkSteveInteraction();
+  }
 }
 
 // Load the horse model
@@ -1422,44 +1600,102 @@ camera.position.set(0, 300, 1000);
 const canvas = document.querySelector("canvas.threejs");
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
-  antialias: true
+  antialias: !isMobile, // Disable antialiasing on mobile for better performance
+  powerPreference: isMobile ? "low-power" : "high-performance"
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 2 : 2)); // Limit pixel ratio on mobile
+renderer.shadowMap.enabled = !isMobile; // Disable shadows on mobile for performance
+if (!isMobile) {
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+}
 
-// instantiate the controls (disabled for third-person view)
+// instantiate the controls (disabled for third-person view, but kept for desktop debugging)
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.minDistance = 100;
 controls.maxDistance = 2000;
+controls.enabled = false; // Disabled by default for third-person view
+
+// Mobile-specific touch prevention for canvas
+if (isMobile) {
+  canvas.addEventListener('touchstart', (e) => {
+    // Allow touch events to pass through to mobile controls
+    if (!e.target.closest('.mobile-controls')) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+  
+  canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+  }, { passive: false });
+  
+  canvas.addEventListener('touchend', (e) => {
+    e.preventDefault();
+  }, { passive: false });
+}
 
 // Make camera follow the horse (third-person view)
 function updateCameraFollow() {
   if (horse) {
-    // Position camera behind and above the horse (third-person view)
-    const idealOffset = new THREE.Vector3(0, 500, -600); // Behind and above
+    // Mobile-optimized camera positioning
+    let idealOffset;
+    
+    if (isMobile) {
+      // Mobile: Higher and further back for better view on small screen
+      idealOffset = new THREE.Vector3(0, 600, -800); // Higher and further back
+    } else {
+      // Desktop: Original positioning
+      idealOffset = new THREE.Vector3(0, 500, -600); // Behind and above
+    }
     
     // Rotate the offset based on horse's rotation so camera follows horse's direction
     idealOffset.applyQuaternion(horse.quaternion);
     
-    // Set camera position
+    // Set camera position with smoother following on mobile
     const idealPosition = horse.position.clone().add(idealOffset);
-    camera.position.lerp(idealPosition, 0.1); // Smooth following
+    const lerpFactor = isMobile ? 0.08 : 0.1; // Slightly smoother on mobile
+    camera.position.lerp(idealPosition, lerpFactor);
     
     // Make camera look at the horse
     const lookAtPosition = horse.position.clone();
-    lookAtPosition.y += 50; // Look at the horse's center
+    lookAtPosition.y += isMobile ? 80 : 50; // Look slightly higher on mobile
     camera.lookAt(lookAtPosition);
   }
 }
 
+// Handle window resize and mobile orientation changes
 window.addEventListener('resize', () => {
+  // Update camera aspect ratio
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
+  
+  // Update renderer size
   renderer.setSize(window.innerWidth, window.innerHeight);
+  
+  // Mobile-specific handling
+  if (isMobile) {
+    // Recalculate pixel ratio on mobile orientation change
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    
+    // Small delay to ensure DOM has updated before recalculating joystick position
+    setTimeout(() => {
+      if (window.updateJoystickCenter) {
+        window.updateJoystickCenter();
+      }
+    }, 100);
+  }
 });
+
+// Handle mobile orientation changes specifically
+if (isMobile) {
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+      // Force a resize event after orientation change
+      window.dispatchEvent(new Event('resize'));
+    }, 500); // Longer delay for orientation change
+  });
+}
 
 // render the scene
 const renderloop = () => {
