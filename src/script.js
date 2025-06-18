@@ -1253,11 +1253,13 @@ function createUI() {
   freeRoamUI.style.left = '50%';
   freeRoamUI.style.transform = 'translateX(-50%)';
   freeRoamUI.style.zIndex = '1000';
+  freeRoamUI.style.width = isMobile ? '95%' : 'auto';
+  freeRoamUI.style.maxWidth = isMobile ? '95%' : '600px';
   freeRoamUI.innerHTML = `
-    <div style="text-align: center; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-family: Arial, sans-serif;">
+    <div style="text-align: center; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-family: Arial, sans-serif; ${isMobile ? 'padding: 0 10px;' : ''}">
       <div style="font-size: 24px; font-weight: bold; margin-bottom: 5px;">🌾 Free Roam Mode 🐎</div>
-      <div style="font-size: 16px;">Explore the countryside! Find Farmer Joe to start the challenge!</div>
-      <div style="font-size: 16px;">Or find Farmer Steve for AI-powered tips! 🤖</div>
+      <div style="font-size: 16px; ${isMobile ? 'line-height: 1.3; margin-bottom: 3px;' : ''}">Explore the countryside! Find Farmer Joe to start the challenge!</div>
+      <div style="font-size: 16px; ${isMobile ? 'line-height: 1.3;' : ''}">Or find Farmer Steve for AI-powered tips! 🤖</div>
     </div>
   `;
   
@@ -2119,11 +2121,37 @@ function checkSteveInteraction() {
     const chatInterface = document.getElementById('steve-chat-interface');
     if (chatInterface) {
       chatInterface.style.display = 'flex';
-      // Focus on input
-      setTimeout(() => {
-        const input = document.getElementById('user-input');
-        if (input) input.focus();
-      }, 100);
+      // Enhanced focus handling for mobile
+      if (isMobile) {
+        // Multiple attempts to focus with different timings
+        setTimeout(() => {
+          const input = document.getElementById('user-input');
+          if (input) {
+            input.focus();
+            input.click(); // Additional trigger for mobile
+          }
+        }, 50);
+        
+        setTimeout(() => {
+          const input = document.getElementById('user-input');
+          if (input) {
+            input.focus();
+          }
+        }, 150);
+        
+        setTimeout(() => {
+          const input = document.getElementById('user-input');
+          if (input) {
+            input.focus();
+          }
+        }, 300);
+      } else {
+        // Desktop - single focus attempt
+        setTimeout(() => {
+          const input = document.getElementById('user-input');
+          if (input) input.focus();
+        }, 100);
+      }
     }
     
     // Make Farmer Steve speak welcome message! 🎤
@@ -2250,15 +2278,21 @@ function createSteveChatInterface() {
       </div>
     </div>
     
-    <div style="display: flex; gap: 10px;">
-      <input type="text" id="user-input" placeholder="Ask Farmer Steve a question..." style="
-        flex: 1;
+    <div>
+      <input type="text" id="user-input" placeholder="Ask Farmer Steve a question..." autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="true" style="
+        width: 100%;
         padding: ${isMobile ? '15px' : '12px'};
         border: 2px solid #0000FF;
         border-radius: 10px;
         font-size: ${isMobile ? '18px' : '16px'};
         outline: none;
+        box-sizing: border-box;
+        margin-bottom: 15px;
+        ${isMobile ? '-webkit-appearance: none; -webkit-user-select: text;' : ''}
       ">
+    </div>
+    
+    <div style="display: flex; gap: 10px; justify-content: center;">
       <button id="send-btn" style="
         padding: ${isMobile ? '15px 25px' : '12px 20px'};
         background: #4CAF50;
@@ -2270,9 +2304,6 @@ function createSteveChatInterface() {
         font-size: ${isMobile ? '18px' : '16px'};
         ${isMobile ? 'min-height: 50px; touch-action: manipulation;' : ''}
       ">Send</button>
-    </div>
-    
-    <div style="text-align: center; margin-top: 15px;">
       <button id="close-chat-btn" style="
         padding: ${isMobile ? '15px 30px' : '10px 20px'};
         background: #f44336;
@@ -2421,6 +2452,36 @@ function createSteveChatInterface() {
     chatInterface.style.display = 'none';
     console.log('🤖 Chat interface closed');
   });
+  
+  // Enhanced mobile input handling
+  if (isMobile) {
+    // Add mobile-specific input events
+    userInput.addEventListener('touchstart', (e) => {
+      e.stopPropagation(); // Don't interfere with other touch events
+      userInput.focus(); // Force focus on touch
+    });
+    
+    userInput.addEventListener('touchend', (e) => {
+      e.stopPropagation();
+      userInput.focus(); // Ensure focus is maintained
+    });
+    
+    userInput.addEventListener('click', (e) => {
+      e.stopPropagation();
+      userInput.focus(); // Ensure focus on click
+    });
+    
+    // Add visual feedback when input is focused
+    userInput.addEventListener('focus', () => {
+      userInput.style.borderColor = '#4CAF50';
+      userInput.style.boxShadow = '0 0 10px rgba(76, 175, 80, 0.3)';
+    });
+    
+    userInput.addEventListener('blur', () => {
+      userInput.style.borderColor = '#0000FF';
+      userInput.style.boxShadow = 'none';
+    });
+  }
   
   // Keep the Enter key handler for input
   userInput.addEventListener('keypress', (e) => {
