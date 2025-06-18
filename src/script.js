@@ -2492,3 +2492,40 @@ function createSteveChatInterface() {
   
   return chatInterface;
 }
+
+// MOBILE HOME BUTTON FIX! 📱🏠
+if (isMobile) {
+  // Add mobile touch events to the Home button
+  document.addEventListener('DOMContentLoaded', () => {
+    const homeBtn = document.querySelector('.back-btn');
+    if (homeBtn) {
+      // Add mobile-friendly touch events
+      homeBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        homeBtn.style.transform = 'scale(0.95)';
+        homeBtn.style.opacity = '0.8';
+      });
+      
+      homeBtn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        homeBtn.style.transform = 'scale(1)';
+        homeBtn.style.opacity = '1';
+        
+        // Navigate to home after visual feedback
+        setTimeout(() => {
+          window.location.href = homeBtn.href;
+        }, 50);
+      });
+      
+      homeBtn.addEventListener('touchcancel', (e) => {
+        e.preventDefault();
+        homeBtn.style.transform = 'scale(1)';
+        homeBtn.style.opacity = '1';
+      });
+      
+      console.log('📱 Mobile Home button touch events added!');
+    }
+  });
+}

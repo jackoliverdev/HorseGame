@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Navbar Component</title>
+    <style>
+        /* Modern Navbar Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8fafc;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        /* Logo Section */
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #1e293b;
+            font-weight: 700;
+            font-size: 1.25rem;
+            transition: color 0.3s ease;
+            height: 40px; /* Fixed height to prevent movement */
+        }
+
+        .nav-logo:hover {
+            color: #3b82f6;
+        }
+
+        .logo-icon {
+            font-size: 1.5rem;
+            /* Removed filter drop-shadow that could cause layout shifts */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        /* Navigation Links */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            position: relative;
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .nav-link.active {
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #3b82f6;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 80%;
+        }
+
+        /* Action Buttons */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-btn.secondary {
+            color: #64748b;
+            background: transparent;
+            border: 1px solid #e2e8f0;
+        }
+
+        .nav-btn.secondary:hover {
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+            border-color: #3b82f6;
+        }
+
+        .nav-btn.primary {
+            color: white;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.25);
+        }
+
+        .nav-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 3px;
+            padding: 0.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .mobile-menu-toggle span {
+            width: 20px;
+            height: 2px;
+            background: #64748b;
+            transition: all 0.3s ease;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .nav-actions .nav-btn.secondary {
+                display: none;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .nav-content {
+                height: 60px;
+            }
+
+            .nav-logo {
+                font-size: 1.1rem;
+            }
+
+            .nav-btn.primary {
+                padding: 0.4rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Demo content */
+        .demo-content {
+            margin-top: 100px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .demo-content h1 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .demo-content p {
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Modern Navbar Component -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-content">
+                <!-- Logo -->
+                <a href="/" class="nav-logo">
+                    <span class="logo-icon">🐎</span>
+                    <span>Horse Game</span>
+                </a>
+
+                <!-- Navigation Links -->
+                <div class="nav-links">
+                    <a href="#home" class="nav-link active">Home</a>
+                    <a href="/play" class="nav-link">Play Game</a>
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#about" class="nav-link">About</a>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="nav-actions">
+                    <button class="nav-btn secondary">
+                        <span>⚙️</span>
+                        Settings
+                    </button>
+                    <a href="/play" class="nav-btn primary">
+                        <span>🎮</span>
+                        Play Now
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Demo Content -->
+    <div class="demo-content">
+        <h1>Modern Navbar Component</h1>
+        <p>This is a professional, modern navbar component with glassmorphism effects, smooth transitions, and responsive design. It matches the quality of your React navbar with proper hover states, active states, and mobile-friendly design.</p>
+    </div>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle (basic implementation)
+        document.getElementById('mobileMenuToggle').addEventListener('click', () => {
+            // You can add mobile menu functionality here
+            console.log('Mobile menu clicked');
+        });
+
+        // Active link handling
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                // Remove active class from all links
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                // Add active class to clicked link
+                e.target.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html> 

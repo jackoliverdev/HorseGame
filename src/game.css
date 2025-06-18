@@ -24,9 +24,22 @@ body {
     padding: 10px 15px;
     border-radius: 5px;
     font-size: 14px;
+    transition: all 0.2s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .back-btn:hover {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.back-btn:active {
+    transform: scale(0.95);
     background: rgba(0, 0, 0, 0.9);
 }
 
@@ -150,8 +163,12 @@ body {
     .back-btn {
         top: 10px;
         left: 10px;
-        padding: 8px 12px;
-        font-size: 12px;
+        padding: 12px 18px;
+        font-size: 16px;
+        min-height: 50px;
+        min-width: 80px;
+        border-radius: 8px;
+        font-weight: 600;
     }
     
     /* Adjust mobile controls for smaller screens */
