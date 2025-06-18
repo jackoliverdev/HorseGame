@@ -194,8 +194,8 @@ body {
     #steve-chat-interface,
     #tips-overlay,
     #endgame-ui {
-        max-width: 90% !important;
-        width: 90% !important;
+        max-width: 95% !important;
+        width: 95% !important;
         margin: 0 auto !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
@@ -233,28 +233,6 @@ body {
 
 /* Landscape mobile adjustments */
 @media (max-width: 768px) and (orientation: landscape) {
-    /* Header adjustments for landscape */
-    .game-header {
-        padding: 8px 15px;
-        flex-direction: row;
-        align-items: center;
-        gap: 15px;
-    }
-    
-    .title-section {
-        text-align: right;
-        margin-left: auto;
-        width: auto;
-    }
-    
-    .title-section h1 {
-        font-size: 18px;
-    }
-    
-    .title-section p {
-        font-size: 11px;
-    }
-    
     .back-btn {
         padding: 6px 12px;
         font-size: 13px;
