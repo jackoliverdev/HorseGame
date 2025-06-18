@@ -57,6 +57,7 @@ function initMobileControls() {
   }
   
   updateJoystickCenter();
+  window.updateJoystickCenter = updateJoystickCenter; // Make globally accessible
   window.addEventListener('resize', updateJoystickCenter);
   window.addEventListener('orientationchange', () => {
     setTimeout(updateJoystickCenter, 100);

@@ -47,6 +47,112 @@ body {
     display: block;
 }
 
+/* MOBILE CONTROLS STYLES 📱🎮 */
+.mobile-controls {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+    display: none; /* Hidden by default, shown by JavaScript on mobile */
+}
+
+.mobile-controls.active {
+    display: block;
+}
+
+/* Virtual Joystick */
+.joystick-container {
+    position: absolute;
+    bottom: 40px;
+    left: 40px;
+    pointer-events: all;
+}
+
+.joystick-base {
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    position: relative;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.joystick-knob {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(255, 255, 255, 1);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    transition: all 0.1s ease;
+}
+
+/* Action Buttons */
+.action-buttons {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    pointer-events: all;
+}
+
+.action-btn {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    outline: none;
+}
+
+.action-btn span {
+    font-size: 24px;
+    margin-bottom: 2px;
+}
+
+.action-btn small {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.action-btn:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.jump-btn:active {
+    background: rgba(76, 175, 80, 0.4);
+    border-color: rgba(76, 175, 80, 0.6);
+}
+
+.interact-btn:active {
+    background: rgba(33, 150, 243, 0.4);
+    border-color: rgba(33, 150, 243, 0.6);
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
     .back-btn-container {
@@ -57,5 +163,63 @@ body {
     .back-btn {
         padding: 10px 16px;
         font-size: 14px;
+    }
+    
+    /* Adjust mobile controls for smaller screens */
+    .joystick-container {
+        bottom: 30px;
+        left: 30px;
+    }
+    
+    .joystick-base {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .joystick-knob {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .action-buttons {
+        bottom: 30px;
+        right: 30px;
+        gap: 15px;
+    }
+    
+    .action-btn {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .action-btn span {
+        font-size: 20px;
+    }
+    
+    .action-btn small {
+        font-size: 9px;
+    }
+}
+
+/* Landscape mobile adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+    .joystick-container {
+        bottom: 20px;
+        left: 20px;
+    }
+    
+    .action-buttons {
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .joystick-base {
+        width: 90px;
+        height: 90px;
+    }
+    
+    .action-btn {
+        width: 60px;
+        height: 60px;
     }
 } 
