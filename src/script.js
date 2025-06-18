@@ -995,14 +995,68 @@ function createSteveSpeechBubble() {
   
   document.body.appendChild(steveBubble);
   
-  // Add event listeners
-  document.getElementById('steve-yes-btn').addEventListener('click', () => {
+  // Enhanced mobile-friendly event listeners for Steve buttons (same as Farmer Joe)
+  const steveYesBtn = document.getElementById('steve-yes-btn');
+  const steveNoBtn = document.getElementById('steve-no-btn');
+  
+  // Function to handle button actions with multiple event types
+  function addMobileFriendlyHandler(button, action) {
+    // Regular click event
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      action();
+    });
+    
+    // Touch events for mobile
+    button.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      button.style.transform = 'scale(0.95)';
+      button.style.opacity = '0.8';
+    });
+    
+    button.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      button.style.transform = 'scale(1)';
+      button.style.opacity = '1';
+      // Execute action on touchend
+      setTimeout(action, 50); // Small delay to show visual feedback
+    });
+    
+    button.addEventListener('touchcancel', (e) => {
+      e.preventDefault();
+      button.style.transform = 'scale(1)';
+      button.style.opacity = '1';
+    });
+    
+    // Mouse events for desktop
+    button.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      button.style.transform = 'scale(0.95)';
+    });
+    
+    button.addEventListener('mouseup', (e) => {
+      e.preventDefault();
+      button.style.transform = 'scale(1)';
+    });
+    
+    button.addEventListener('mouseleave', (e) => {
+      button.style.transform = 'scale(1)';
+    });
+  }
+  
+  // Add handlers for both Steve buttons
+  addMobileFriendlyHandler(steveYesBtn, () => {
     steveBubble.style.display = 'none';
     showTips();
+    console.log('💡 Steve YES button pressed - Showing tips!');
   });
   
-  document.getElementById('steve-no-btn').addEventListener('click', () => {
+  addMobileFriendlyHandler(steveNoBtn, () => {
     steveBubble.style.display = 'none';
+    console.log('❌ Steve NO button pressed - Closing modal');
   });
   
   return steveBubble;
@@ -2313,16 +2367,66 @@ function createSteveChatInterface() {
     }
   }
   
-  // Event listeners
-  sendBtn.addEventListener('click', sendMessage);
+  // Enhanced mobile-friendly event listeners for chat buttons
+  function addChatMobileFriendlyHandler(button, action) {
+    // Regular click event
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      action();
+    });
+    
+    // Touch events for mobile
+    button.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      button.style.transform = 'scale(0.95)';
+      button.style.opacity = '0.8';
+    });
+    
+    button.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      button.style.transform = 'scale(1)';
+      button.style.opacity = '1';
+      // Execute action on touchend
+      setTimeout(action, 50); // Small delay to show visual feedback
+    });
+    
+    button.addEventListener('touchcancel', (e) => {
+      e.preventDefault();
+      button.style.transform = 'scale(1)';
+      button.style.opacity = '1';
+    });
+    
+    // Mouse events for desktop
+    button.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      button.style.transform = 'scale(0.95)';
+    });
+    
+    button.addEventListener('mouseup', (e) => {
+      e.preventDefault();
+      button.style.transform = 'scale(1)';
+    });
+    
+    button.addEventListener('mouseleave', (e) => {
+      button.style.transform = 'scale(1)';
+    });
+  }
+  
+  // Apply mobile-friendly handlers to chat buttons
+  addChatMobileFriendlyHandler(sendBtn, sendMessage);
+  addChatMobileFriendlyHandler(closeBtn, () => {
+    chatInterface.style.display = 'none';
+    console.log('🤖 Chat interface closed');
+  });
+  
+  // Keep the Enter key handler for input
   userInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
       sendMessage();
     }
-  });
-  
-  closeBtn.addEventListener('click', () => {
-    chatInterface.style.display = 'none';
   });
   
   return chatInterface;
