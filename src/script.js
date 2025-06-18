@@ -855,18 +855,20 @@ function createSpeechBubble() {
     </div>
     <div style="margin-top: 20px;">
       <button id="farmer-yes-btn" style="
-        padding: 12px 25px; margin: 0 10px;
-        font-size: 18px; font-weight: bold;
+        padding: ${isMobile ? '18px 30px' : '12px 25px'}; margin: ${isMobile ? '10px 5px' : '0 10px'};
+        font-size: ${isMobile ? '22px' : '18px'}; font-weight: bold;
         background: #4CAF50; border: none;
-        border-radius: 10px; color: white;
-        cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        border-radius: ${isMobile ? '15px' : '10px'}; color: white;
+        cursor: pointer; box-shadow: 0 ${isMobile ? '4px 15px' : '3px 10px'} rgba(0,0,0,0.3);
+        ${isMobile ? 'min-height: 60px; min-width: 120px; touch-action: manipulation;' : ''}
       ">🌾 YES!</button>
       <button id="farmer-no-btn" style="
-        padding: 12px 25px; margin: 0 10px;
-        font-size: 18px; font-weight: bold;
+        padding: ${isMobile ? '18px 30px' : '12px 25px'}; margin: ${isMobile ? '10px 5px' : '0 10px'};
+        font-size: ${isMobile ? '22px' : '18px'}; font-weight: bold;
         background: #f44336; border: none;
-        border-radius: 10px; color: white;
-        cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        border-radius: ${isMobile ? '15px' : '10px'}; color: white;
+        cursor: pointer; box-shadow: 0 ${isMobile ? '4px 15px' : '3px 10px'} rgba(0,0,0,0.3);
+        ${isMobile ? 'min-height: 60px; min-width: 120px; touch-action: manipulation;' : ''}
       ">❌ No thanks</button>
     </div>
   `;
@@ -919,18 +921,20 @@ function createSteveSpeechBubble() {
     </div>
     <div style="margin-top: 20px;">
       <button id="steve-yes-btn" style="
-        padding: 12px 25px; margin: 0 10px;
-        font-size: 18px; font-weight: bold;
+        padding: ${isMobile ? '18px 30px' : '12px 25px'}; margin: ${isMobile ? '10px 5px' : '0 10px'};
+        font-size: ${isMobile ? '22px' : '18px'}; font-weight: bold;
         background: #4CAF50; border: none;
-        border-radius: 10px; color: white;
-        cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        border-radius: ${isMobile ? '15px' : '10px'}; color: white;
+        cursor: pointer; box-shadow: 0 ${isMobile ? '4px 15px' : '3px 10px'} rgba(0,0,0,0.3);
+        ${isMobile ? 'min-height: 60px; min-width: 120px; touch-action: manipulation;' : ''}
       ">💡 YES!</button>
       <button id="steve-no-btn" style="
-        padding: 12px 25px; margin: 0 10px;
-        font-size: 18px; font-weight: bold;
+        padding: ${isMobile ? '18px 30px' : '12px 25px'}; margin: ${isMobile ? '10px 5px' : '0 10px'};
+        font-size: ${isMobile ? '22px' : '18px'}; font-weight: bold;
         background: #f44336; border: none;
-        border-radius: 10px; color: white;
-        cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        border-radius: ${isMobile ? '15px' : '10px'}; color: white;
+        cursor: pointer; box-shadow: 0 ${isMobile ? '4px 15px' : '3px 10px'} rgba(0,0,0,0.3);
+        ${isMobile ? 'min-height: 60px; min-width: 120px; touch-action: manipulation;' : ''}
       ">❌ No thanks</button>
     </div>
   `;
@@ -1450,7 +1454,7 @@ function updateHorseMovement() {
   let shouldJump = false;
   let shouldInteract = false;
   
-  if (isMobile) {
+    if (isMobile) {
     // Mobile touch controls
     moveForward = Math.max(0, mobileControls.movement.forward);
     moveBackward = Math.max(0, -mobileControls.movement.forward);
@@ -1476,6 +1480,12 @@ function updateHorseMovement() {
       jumpStartY = horse.position.y;
       jumpProgress = 0;
       mobileControls.jumpPressed = true;
+      
+      // INSTANT forward boost when jump starts
+      const direction = new THREE.Vector3();
+      horse.getWorldDirection(direction);
+      horse.position.x += direction.x * 200; // Big forward boost
+      horse.position.z += direction.z * 200;
     }
     // Reset jump pressed when button is released
     if (!shouldJump) {
@@ -1487,22 +1497,12 @@ function updateHorseMovement() {
       isJumping = true;
       jumpStartY = horse.position.y;
       jumpProgress = 0;
-    }
-  }
-  
-  // Handle jump physics
-  if (isJumping) {
-    jumpProgress += 0.02; // Jump speed
-    
-    if (jumpProgress <= 1) {
-      // Parabolic jump arc
-      const jumpArc = Math.sin(jumpProgress * Math.PI);
-      horse.position.y = jumpStartY + jumpArc * jumpHeight;
-    } else {
-      // Land
-      horse.position.y = jumpStartY;
-      isJumping = false;
-      jumpProgress = 0;
+      
+      // INSTANT forward boost when jump starts
+      const direction = new THREE.Vector3();
+      horse.getWorldDirection(direction);
+      horse.position.x += direction.x * 200; // Big forward boost
+      horse.position.z += direction.z * 200;
     }
   }
   
@@ -1530,6 +1530,29 @@ function updateHorseMovement() {
   if (!checkFenceCollision(newX, newZ)) {
     horse.position.x = newX;
     horse.position.z = newZ;
+  }
+  
+  // Handle jump physics AFTER regular movement so it doesn't get overwritten
+  if (isJumping) {
+    jumpProgress += 0.02; // Jump speed
+    
+    if (jumpProgress <= 1) {
+      // Parabolic jump arc
+      const jumpArc = Math.sin(jumpProgress * Math.PI);
+      horse.position.y = jumpStartY + jumpArc * jumpHeight;
+      
+      // ALWAYS move forward during jump - no conditions!
+      const direction = new THREE.Vector3();
+      horse.getWorldDirection(direction);
+      // Move forward every frame during jump
+      horse.position.x += direction.x * horseSpeed * 1.2;
+      horse.position.z += direction.z * horseSpeed * 1.2;
+    } else {
+      // Land
+      horse.position.y = jumpStartY;
+      isJumping = false;
+      jumpProgress = 0;
+    }
   }
   
   // Left/Right turning (unified)
@@ -1626,7 +1649,7 @@ if (isMobile) {
   canvas.addEventListener('touchstart', (e) => {
     // Allow touch events to pass through to mobile controls
     if (!e.target.closest('.mobile-controls')) {
-      e.preventDefault();
+        e.preventDefault();
     }
   }, { passive: false });
   
@@ -2073,8 +2096,10 @@ function createSteveChatInterface() {
   chatInterface.style.top = '50%';
   chatInterface.style.left = '50%';
   chatInterface.style.transform = 'translate(-50%, -50%)';
-  chatInterface.style.width = '500px';
-  chatInterface.style.height = '600px';
+  chatInterface.style.width = isMobile ? '95vw' : '500px';
+  chatInterface.style.height = isMobile ? '85vh' : '600px';
+  chatInterface.style.maxWidth = isMobile ? '95vw' : '500px';
+  chatInterface.style.maxHeight = isMobile ? '85vh' : '600px';
   chatInterface.style.background = 'rgba(135, 206, 250, 0.95)';
   chatInterface.style.border = '3px solid #0000FF';
   chatInterface.style.borderRadius = '20px';
@@ -2120,33 +2145,36 @@ function createSteveChatInterface() {
     <div style="display: flex; gap: 10px;">
       <input type="text" id="user-input" placeholder="Ask Farmer Steve a question..." style="
         flex: 1;
-        padding: 12px;
+        padding: ${isMobile ? '15px' : '12px'};
         border: 2px solid #0000FF;
         border-radius: 10px;
-        font-size: 16px;
+        font-size: ${isMobile ? '18px' : '16px'};
         outline: none;
       ">
       <button id="send-btn" style="
-        padding: 12px 20px;
+        padding: ${isMobile ? '15px 25px' : '12px 20px'};
         background: #4CAF50;
         border: none;
         border-radius: 10px;
         color: white;
         font-weight: bold;
         cursor: pointer;
-        font-size: 16px;
+        font-size: ${isMobile ? '18px' : '16px'};
+        ${isMobile ? 'min-height: 50px; touch-action: manipulation;' : ''}
       ">Send</button>
     </div>
     
     <div style="text-align: center; margin-top: 15px;">
       <button id="close-chat-btn" style="
-        padding: 10px 20px;
+        padding: ${isMobile ? '15px 30px' : '10px 20px'};
         background: #f44336;
         border: none;
         border-radius: 10px;
         color: white;
         font-weight: bold;
         cursor: pointer;
+        font-size: ${isMobile ? '18px' : '16px'};
+        ${isMobile ? 'min-height: 50px; touch-action: manipulation;' : ''}
       ">Close Chat</button>
     </div>
   `;
