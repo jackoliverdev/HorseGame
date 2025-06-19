@@ -1741,7 +1741,7 @@ const renderer = new THREE.WebGLRenderer({
   powerPreference: isMobile ? "low-power" : "high-performance"
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(isMobile ? Math.min(window.devicePixelRatio, 2) : window.devicePixelRatio); // Limit pixel ratio on mobile only
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 2 : 2)); // Limit pixel ratio on mobile
 renderer.shadowMap.enabled = !isMobile; // Disable shadows on mobile for performance
 if (!isMobile) {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
